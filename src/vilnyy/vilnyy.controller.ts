@@ -27,7 +27,7 @@ export class VilnyyController {
 
   @Get()
   @ApiResponse({ status: 200, type: Vilnyy, isArray: true })
-  getAllVilnyys(): Promise<Vilnyy[]> {
+  getAll(): Promise<Vilnyy[]> {
     return this.vilnyyService.findAll();
   }
 

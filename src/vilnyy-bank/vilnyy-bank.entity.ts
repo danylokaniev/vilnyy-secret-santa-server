@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
 import {
   Entity,
@@ -25,7 +24,7 @@ export class VilnyyBank {
 
   @ApiProperty()
   @Column()
-  goal: string;
+  goal: number;
 
   @ApiProperty()
   @Column()
