@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { CreateVilnyyDto } from './dto/create-vilnyy.dto';
 import { Vilnyy } from './vilnyy.entity';
 
@@ -24,5 +24,9 @@ export class VilnyyService {
     vilnyyDto?.internalId && (vilnyy.internalId = vilnyyDto.internalId);
 
     return this.vilnyyRepo.save(vilnyy);
+  }
+
+  async delete(vilnyyId: number): Promise<DeleteResult> {
+    return this.vilnyyRepo.delete(vilnyyId);
   }
 }
