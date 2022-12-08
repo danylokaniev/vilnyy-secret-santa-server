@@ -15,7 +15,7 @@ export class VilnyyService {
     return this.vilnyyRepo.find({});
   }
 
-  async createVilnyy(vilnyyDto: CreateVilnyyDto): Promise<Vilnyy> {
+  async create(vilnyyDto: CreateVilnyyDto): Promise<Vilnyy> {
     const vilnyy = new Vilnyy();
     vilnyy.name = vilnyyDto.name;
 

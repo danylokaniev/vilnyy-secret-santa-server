@@ -13,10 +13,7 @@ async function bootstrap() {
   const authOptions = new DocumentBuilder()
     .setTitle('Villny Secret Santa API')
     .setDescription('# About\nBasic description\n')
-    .addBearerAuth(
-      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
-      'secret_token',
-    )
+    .addSecurity('token', { type: 'apiKey', in: 'header', name: 'token' })
     .build();
 
   const document = SwaggerModule.createDocument(app, authOptions);

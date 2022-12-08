@@ -17,6 +17,9 @@ class EnvironmentVariables {
 
   @IsNumber()
   POSTGRES_PORT: number;
+
+  @IsString()
+  ADMIN_AUTH_TOKEN: string;
 }
 
 export function validate(

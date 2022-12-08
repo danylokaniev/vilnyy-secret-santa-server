@@ -1,5 +1,12 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
-import { ApiResponse, ApiBody, ApiTags, ApiOperation } from '@nestjs/swagger';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  ApiResponse,
+  ApiBody,
+  ApiTags,
+  ApiOperation,
+  ApiSecurity,
+} from '@nestjs/swagger';
+import { AuthGuard } from 'src/guard/auth.guard';
 import { CreateVilnyyDto } from './dto/create-vilnyy.dto';
 import { Vilnyy } from './vilnyy.entity';
 import { VilnyyService } from './vilnyy.service';
@@ -16,10 +23,12 @@ export class VilnyyController {
   }
 
   @Post()
+  @ApiSecurity('token')
+  @UseGuards(AuthGuard)
   @ApiOperation({ summary: 'summary', description: 'description' })
   @ApiResponse({ status: 200, type: Vilnyy })
   @ApiBody({ type: CreateVilnyyDto })
   createVilnyy(@Body() vilnyyDto: CreateVilnyyDto): Promise<Vilnyy> {
-    return this.vilnyyService.createVilnyy(vilnyyDto);
+    return this.vilnyyService.create(vilnyyDto);
   }
 }
