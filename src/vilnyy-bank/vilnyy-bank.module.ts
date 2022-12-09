@@ -8,12 +8,8 @@ import { VilnyyBankController } from './vilnyy-bank.controller';
 import { VilnyyBankService } from './vilnyy-bank.service';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Vilnyy, VilnyyBank]),
-    HttpModule,
-    ScheduleModule.forRoot(),
-  ],
+  imports: [TypeOrmModule.forFeature([Vilnyy, VilnyyBank]), HttpModule, ScheduleModule.forRoot()],
   providers: [VilnyyBankService],
-  controllers: [VilnyyBankController],
+  controllers: [VilnyyBankController]
 })
 export class VilnyyBankModule {}

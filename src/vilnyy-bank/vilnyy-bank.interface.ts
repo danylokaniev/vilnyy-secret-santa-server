@@ -31,6 +31,4 @@ export interface MonoBankResponse extends MonoBankRawResponse {
   bankId: string;
 }
 
-export type SettledMonoBankPromises =
-  | { status: 'fulfilled'; value: MonoBankResponse }
-  | { status: 'rejected' };
+export type SettledMonoBankPromises = { status: 'fulfilled'; value: MonoBankResponse } | { status: 'rejected' };

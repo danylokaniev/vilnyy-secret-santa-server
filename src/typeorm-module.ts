@@ -12,5 +12,5 @@ export default TypeOrmModule.forRoot({
   entities: [Vilnyy, VilnyyBank],
   migrationsTableName: 'migration',
   migrations: ['src/migration/*.ts'],
-  synchronize: true,
+  synchronize: true
 });

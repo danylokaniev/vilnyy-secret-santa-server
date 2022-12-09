@@ -8,7 +8,7 @@ import { Vilnyy } from './vilnyy.entity';
 export class VilnyyService {
   constructor(
     @InjectRepository(Vilnyy)
-    private vilnyyRepo: Repository<Vilnyy>,
+    private vilnyyRepo: Repository<Vilnyy>
   ) {}
 
   findAll(): Promise<Vilnyy[]> {

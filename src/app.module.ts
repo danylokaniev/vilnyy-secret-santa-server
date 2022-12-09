@@ -5,6 +5,6 @@ import { VilnyyModule } from './vilnyy/vilnyy.module';
 import { VilnyyBankModule } from './vilnyy-bank/vilnyy-bank.module';
 
 @Module({
-  imports: [ConfigModule, TypeOrmModule, VilnyyModule, VilnyyBankModule],
+  imports: [ConfigModule, TypeOrmModule, VilnyyModule, VilnyyBankModule]
 })
 export class AppModule {}

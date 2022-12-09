@@ -1,13 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
-import {
-  Entity,
-  Column,
-  CreateDateColumn,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, JoinColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class VilnyyBank {

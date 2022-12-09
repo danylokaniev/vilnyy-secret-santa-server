@@ -1,19 +1,5 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  Post,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiResponse,
-  ApiBody,
-  ApiTags,
-  ApiOperation,
-  ApiSecurity,
-} from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiResponse, ApiBody, ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { DeleteResult } from 'typeorm';
 import { CreateVilnyyDto } from './dto/create-vilnyy.dto';

@@ -7,6 +7,6 @@ import { VilnyyController } from './vilnyy.controller';
 @Module({
   imports: [TypeOrmModule.forFeature([Vilnyy])],
   providers: [VilnyyService],
-  controllers: [VilnyyController],
+  controllers: [VilnyyController]
 })
 export class VilnyyModule {}

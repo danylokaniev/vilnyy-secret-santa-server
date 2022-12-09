@@ -7,10 +7,7 @@ import { In, IsNull, Not, Repository } from 'typeorm';
 import { CreateVilnyyBankDto } from './dto/create-vilnyy-bank.dto';
 import { MONO_BANK_API_URL, MONO_BANK_PC } from './vilnyy-bank.constants';
 import { VilnyyBank } from './vilnyy-bank.entity';
-import {
-  MonoBankResponse,
-  SettledMonoBankPromises,
-} from './vilnyy-bank.interface';
+import { MonoBankResponse, SettledMonoBankPromises } from './vilnyy-bank.interface';
 
 @Injectable()
 export class VilnyyBankService {
@@ -19,7 +16,7 @@ export class VilnyyBankService {
     private vilnyyBankRepo: Repository<VilnyyBank>,
     @InjectRepository(Vilnyy)
     private vilnyyRepo: Repository<Vilnyy>,
-    private httpService: HttpService,
+    private httpService: HttpService
   ) {}
 
   findAll(): Promise<VilnyyBank[]> {
@@ -39,14 +36,12 @@ export class VilnyyBankService {
   @Cron(CronExpression.EVERY_MINUTE)
   async addCurrentBanks() {
     const vilnyys = await this.vilnyyRepo.find({
-      where: {
-        bankId: Not(IsNull()),
-      },
+      where: { bankId: Not(IsNull()) }
     });
     const vilnyyBanks = await this.vilnyyBankRepo.find({
       where: {
-        vilnyyId: In(vilnyys.map((vil) => vil.id)),
-      },
+        vilnyyId: In(vilnyys.map((vil) => vil.id))
+      }
     });
 
     const bankIds = vilnyys.map((vil) => vil.bankId);
@@ -56,26 +51,16 @@ export class VilnyyBankService {
       .map((bank) => ({
         vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
         goal: bank.jarGoal / 100,
-        amount: (bank.jarAmount ?? 0) / 100,
+        amount: (bank.jarAmount ?? 0) / 100
       }))
       // filter only updated banks
       .filter((newBank) => {
-        const prevVilnyyBank = vilnyyBanks.find(
-          (bank) => bank.vilnyyId === newBank.vilnyyId,
-        );
-        return (
-          prevVilnyyBank.amount !== newBank.amount ||
-          prevVilnyyBank.goal !== newBank.goal
-        );
+        const prevVilnyyBank = vilnyyBanks.find((bank) => bank.vilnyyId === newBank.vilnyyId);
+        return prevVilnyyBank.amount !== newBank.amount || prevVilnyyBank.goal !== newBank.goal;
       });
 
     if (updatedBanks.length) {
-      await this.vilnyyBankRepo
-        .createQueryBuilder()
-        .insert()
-        .into(VilnyyBank)
-        .values(updatedBanks)
-        .execute();
+      await this.vilnyyBankRepo.createQueryBuilder().insert().into(VilnyyBank).values(updatedBanks).execute();
     }
   }
 
@@ -86,9 +71,7 @@ export class VilnyyBankService {
       requests.push(this.fetchMonoBank(bankId));
     }
 
-    const responses: SettledMonoBankPromises[] = await Promise.allSettled(
-      requests,
-    );
+    const responses: SettledMonoBankPromises[] = await Promise.allSettled(requests);
     const results: MonoBankResponse[] = [];
 
     for (let i = 0; i < responses.length; i++) {

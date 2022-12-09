@@ -5,5 +5,5 @@ export default ConfigModule.forRoot({
   validate: validate,
   validationSchema: {},
   isGlobal: true,
-  envFilePath: !process.env.NODE_ENV ? '.env' : `.env.${process.env.NODE_ENV}`,
+  envFilePath: !process.env.NODE_ENV ? '.env' : `.env.${process.env.NODE_ENV}`
 });
