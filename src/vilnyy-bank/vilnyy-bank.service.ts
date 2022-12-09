@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
-import { IsNull, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { CreateVilnyyBankDto } from './dto/create-vilnyy-bank.dto';
 import { MONO_BANK_API_URL, MONO_BANK_PC } from './vilnyy-bank.constants';
 import { VilnyyBank } from './vilnyy-bank.entity';
@@ -43,22 +43,40 @@ export class VilnyyBankService {
         bankId: Not(IsNull()),
       },
     });
+    const vilnyyBanks = await this.vilnyyBankRepo.find({
+      where: {
+        vilnyyId: In(vilnyys.map((vil) => vil.id)),
+      },
+    });
 
     const bankIds = vilnyys.map((vil) => vil.bankId);
     const currentBanks = await this.getCurrentBanks(bankIds);
 
-    const currentBanksDto: CreateVilnyyBankDto[] = currentBanks.map((bank) => ({
-      vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
-      goal: bank.jarGoal / 100,
-      amount: (bank.jarAmount ?? 0) / 100,
-    }));
+    const updatedBanks: CreateVilnyyBankDto[] = currentBanks
+      .map((bank) => ({
+        vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
+        goal: bank.jarGoal / 100,
+        amount: (bank.jarAmount ?? 0) / 100,
+      }))
+      // filter only updated banks
+      .filter((newBank) => {
+        const prevVilnyyBank = vilnyyBanks.find(
+          (bank) => bank.vilnyyId === newBank.vilnyyId,
+        );
+        return (
+          prevVilnyyBank.amount !== newBank.amount ||
+          prevVilnyyBank.goal !== newBank.goal
+        );
+      });
 
-    await this.vilnyyBankRepo
-      .createQueryBuilder()
-      .insert()
-      .into(VilnyyBank)
-      .values(currentBanksDto)
-      .execute();
+    if (updatedBanks.length) {
+      await this.vilnyyBankRepo
+        .createQueryBuilder()
+        .insert()
+        .into(VilnyyBank)
+        .values(updatedBanks)
+        .execute();
+    }
   }
 
   async getCurrentBanks(bankIds: string[]): Promise<MonoBankResponse[]> {
