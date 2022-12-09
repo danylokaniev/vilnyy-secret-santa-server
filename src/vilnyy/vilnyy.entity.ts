@@ -6,7 +6,7 @@ import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn } from 'typeor
 export class Vilnyy {
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
-  id: string;
+  id: number;
 
   @ApiProperty()
   @Column()

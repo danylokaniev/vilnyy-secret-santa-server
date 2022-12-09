@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guard/auth.guard';
 import { VilnyyBank } from './vilnyy-bank.entity';
 import { VilnyyBankService } from './vilnyy-bank.service';
 
@@ -10,7 +11,15 @@ export class VilnyyBankController {
 
   @Get()
   @ApiResponse({ status: 200, type: VilnyyBank, isArray: true })
-  getAll(): Promise<VilnyyBank[]> {
-    return this.vilnyyBankService.findAll();
+  getLatestBanks(): Promise<VilnyyBank[]> {
+    return this.vilnyyBankService.getLatestBanks();
+  }
+
+  @Get(':vilnyyId')
+  @ApiSecurity('token')
+  @UseGuards(AuthGuard)
+  @ApiResponse({ status: 200, type: VilnyyBank, isArray: true })
+  getAllByVilnyyId(@Param('vilnyyId') vilnyyId: string): Promise<VilnyyBank[]> {
+    return this.vilnyyBankService.getAllByVilnyyId(Number(vilnyyId));
   }
 }

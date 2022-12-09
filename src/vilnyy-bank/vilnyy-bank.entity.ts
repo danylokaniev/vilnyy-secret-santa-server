@@ -6,14 +6,14 @@ import { Entity, Column, CreateDateColumn, PrimaryGeneratedColumn, JoinColumn, M
 export class VilnyyBank {
   @ApiProperty()
   @PrimaryGeneratedColumn('increment')
-  id: string;
+  id: number;
 
   @ApiProperty()
   @ManyToOne(() => Vilnyy, (vilnyy) => vilnyy.id, { eager: true })
   @JoinColumn()
   vilnyy?: Vilnyy;
   @Column({ nullable: true })
-  vilnyyId: string;
+  vilnyyId: number;
 
   @ApiProperty()
   @Column()

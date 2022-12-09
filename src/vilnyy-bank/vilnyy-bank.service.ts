@@ -2,6 +2,9 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
+import { create } from 'domain';
+import { query } from 'express';
+import { async } from 'rxjs';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
 import { In, IsNull, Not, Repository } from 'typeorm';
 import { CreateVilnyyBankDto } from './dto/create-vilnyy-bank.dto';
@@ -19,8 +22,24 @@ export class VilnyyBankService {
     private httpService: HttpService
   ) {}
 
-  findAll(): Promise<VilnyyBank[]> {
-    return this.vilnyyBankRepo.find({});
+  getAllByVilnyyId(vilnyyId: number): Promise<VilnyyBank[]> {
+    return this.vilnyyBankRepo.find({ where: { vilnyyId } });
+  }
+
+  getLatestBanks(vilnyyIds?: number[]): Promise<VilnyyBank[]> {
+    const query = this.vilnyyBankRepo
+      .createQueryBuilder('bank')
+      .select(['bank.vilnyyId', 'bank.amount', 'bank.goal'])
+      .distinctOn(['bank.vilnyyId'])
+      .orderBy({ 'bank.vilnyyId': 'ASC', 'bank.createdAt': 'DESC' });
+
+    if (vilnyyIds) {
+      query.andWhere('bank.vilnyyId IN (:...vilnyyIds)', {
+        vilnyyIds
+      });
+    }
+
+    return query.getMany();
   }
 
   async create(vilnyyBankDto: CreateVilnyyBankDto): Promise<VilnyyBank> {
@@ -34,18 +53,13 @@ export class VilnyyBankService {
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
-  async addCurrentBanks() {
+  async updateBanks() {
     const vilnyys = await this.vilnyyRepo.find({
       where: { bankId: Not(IsNull()) }
     });
-    const vilnyyBanks = await this.vilnyyBankRepo.find({
-      where: {
-        vilnyyId: In(vilnyys.map((vil) => vil.id))
-      }
-    });
 
-    const bankIds = vilnyys.map((vil) => vil.bankId);
-    const currentBanks = await this.getCurrentBanks(bankIds);
+    const vilnyyBanks = await this.getLatestBanks(vilnyys.map((vil) => vil.id));
+    const currentBanks = await this.getCurrentBanks(vilnyys.map((vil) => vil.bankId));
 
     const updatedBanks: CreateVilnyyBankDto[] = currentBanks
       .map((bank) => ({
