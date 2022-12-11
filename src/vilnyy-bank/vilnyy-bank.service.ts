@@ -37,6 +37,8 @@ export class VilnyyBankService {
       query.andWhere('bank.vilnyyId IN (:...vilnyyIds)', {
         vilnyyIds
       });
+    } else {
+      query.leftJoinAndMapOne('bank.vilnyy', 'bank.vilnyy', 'vilnyy');
     }
 
     return query.getMany();
