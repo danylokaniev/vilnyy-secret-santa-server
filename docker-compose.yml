@@ -10,7 +10,7 @@ services:
     restart: always 
     env_file: .env
     ports:
-      - "3000:3000"
+      - $PORT:$PORT
     networks:
       - vilnyy-app-api
 networks:
