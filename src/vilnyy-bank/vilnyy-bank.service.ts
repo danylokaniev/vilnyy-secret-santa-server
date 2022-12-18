@@ -65,13 +65,13 @@ export class VilnyyBankService {
     const updatedBanks: CreateVilnyyBankDto[] = currentBanks
       .map((bank) => ({
         vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
-        goal: bank.jarGoal / 100,
-        amount: (bank.jarAmount ?? 0) / 100
+        goal: bank?.jarGoal / 100,
+        amount: (bank?.jarAmount ?? 0) / 100
       }))
       // filter only updated banks
       .filter((newBank) => {
         const prevVilnyyBank = vilnyyBanks.find((bank) => bank.vilnyyId === newBank.vilnyyId);
-        return prevVilnyyBank.amount !== newBank.amount || prevVilnyyBank.goal !== newBank.goal;
+        return prevVilnyyBank?.amount !== newBank?.amount || prevVilnyyBank?.goal !== newBank?.goal;
       });
 
     if (updatedBanks.length) {
