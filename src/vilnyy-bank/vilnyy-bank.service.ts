@@ -51,7 +51,7 @@ export class VilnyyBankService {
     return this.vilnyyBankRepo.save(vilnyy);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron('*/2 * * * *')
   async updateBanks() {
     const vilnyys = await this.vilnyyRepo.find({
       where: { bankId: Not(IsNull()) }

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ScheduleModule } from '@nestjs/schedule';
 import { VilnyyBank } from './vilnyy-bank.entity';
@@ -8,7 +8,14 @@ import { VilnyyBankController } from './vilnyy-bank.controller';
 import { VilnyyBankService } from './vilnyy-bank.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Vilnyy, VilnyyBank]), HttpModule, ScheduleModule.forRoot()],
+  imports: [
+    TypeOrmModule.forFeature([Vilnyy, VilnyyBank]),
+    HttpModule,
+    ScheduleModule.forRoot(),
+    CacheModule.register({
+      ttl: 120 * 1000
+    })
+  ],
   providers: [VilnyyBankService],
   controllers: [VilnyyBankController]
 })

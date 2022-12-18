@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { CacheInterceptor, Controller, Get, Param, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { VilnyyBank } from './vilnyy-bank.entity';
@@ -11,6 +11,7 @@ export class VilnyyBankController {
 
   @Get()
   @ApiResponse({ status: 200, type: VilnyyBank, isArray: true })
+  @UseInterceptors(CacheInterceptor)
   getLatestBanks(): Promise<VilnyyBank[]> {
     return this.vilnyyBankService.getLatestBanks();
   }
