@@ -2,11 +2,8 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { create } from 'domain';
-import { query } from 'express';
-import { async } from 'rxjs';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
-import { In, IsNull, Not, Repository } from 'typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
 import { CreateVilnyyBankDto } from './dto/create-vilnyy-bank.dto';
 import { MONO_BANK_API_URL, MONO_BANK_PC } from './vilnyy-bank.constants';
 import { VilnyyBank } from './vilnyy-bank.entity';
@@ -33,7 +30,7 @@ export class VilnyyBankService {
       .distinctOn(['bank.vilnyyId'])
       .orderBy({ 'bank.vilnyyId': 'ASC', 'bank.createdAt': 'DESC' });
 
-    if (vilnyyIds) {
+    if (vilnyyIds?.length) {
       query.andWhere('bank.vilnyyId IN (:...vilnyyIds)', {
         vilnyyIds
       });
@@ -59,6 +56,8 @@ export class VilnyyBankService {
     const vilnyys = await this.vilnyyRepo.find({
       where: { bankId: Not(IsNull()) }
     });
+
+    if (!vilnyys.length) return;
 
     const vilnyyBanks = await this.getLatestBanks(vilnyys.map((vil) => vil.id));
     const currentBanks = await this.getCurrentBanks(vilnyys.map((vil) => vil.bankId));
