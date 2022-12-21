@@ -9,7 +9,7 @@ export class VilnyyBank {
   id: number;
 
   @ApiProperty()
-  @ManyToOne(() => Vilnyy, (vilnyy) => vilnyy.id, { eager: true })
+  @ManyToOne(() => Vilnyy, (vilnyy) => vilnyy.id, { eager: true, onDelete: 'CASCADE' })
   @JoinColumn()
   vilnyy?: Vilnyy;
   @Column({ nullable: true })
