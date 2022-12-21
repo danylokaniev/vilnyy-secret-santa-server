@@ -1,5 +1,6 @@
 import { CacheInterceptor, Controller, Get, Param, UseGuards, UseInterceptors } from '@nestjs/common';
 import { ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { VilnyyBank } from './vilnyy-bank.entity';
 import { VilnyyBankService } from './vilnyy-bank.service';
@@ -11,6 +12,7 @@ export class VilnyyBankController {
 
   @Get()
   @ApiResponse({ status: 200, type: VilnyyBank, isArray: true })
+  @SkipThrottle()
   @UseInterceptors(CacheInterceptor)
   getLatestBanks(): Promise<VilnyyBank[]> {
     return this.vilnyyBankService.getLatestBanks();
