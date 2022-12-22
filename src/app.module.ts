@@ -5,6 +5,7 @@ import { VilnyyModule } from './vilnyy/vilnyy.module';
 import { VilnyyBankModule } from './vilnyy-bank/vilnyy-bank.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { APP_GUARD } from '@nestjs/core';
       provide: APP_GUARD,
       useClass: ThrottlerGuard
     }
-  ]
+  ],
+  controllers: [AppController]
 })
 export class AppModule {}
