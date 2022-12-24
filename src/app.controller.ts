@@ -7,7 +7,7 @@ export class AppController {
   @Get()
   get(): Record<string, string> {
     return {
-      version: '1.0.1'
+      version: '1.0.2'
     };
   }
 }
