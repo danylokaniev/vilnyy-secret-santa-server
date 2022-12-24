@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ApiResponse, ApiBody, ApiTags, ApiOperation, ApiSecurity } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { ApiResponse, ApiBody, ApiTags, ApiSecurity } from '@nestjs/swagger';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateVilnyyDto } from './dto/create-vilnyy.dto';
+import { UpdateVilnyyDto } from './dto/update-vilnyy.dto';
 import { Vilnyy } from './vilnyy.entity';
 import { VilnyyService } from './vilnyy.service';
 
@@ -17,10 +18,18 @@ export class VilnyyController {
     return this.vilnyyService.findAll();
   }
 
+  @Put('/:id')
+  @ApiSecurity('token')
+  @UseGuards(AuthGuard)
+  @ApiResponse({ status: 200, type: Vilnyy })
+  @ApiBody({ type: UpdateVilnyyDto })
+  update(@Param('id') id: string, @Body() vilnyyDto: UpdateVilnyyDto): Promise<UpdateResult> {
+    return this.vilnyyService.update(Number(id), vilnyyDto);
+  }
+
   @Post()
   @ApiSecurity('token')
   @UseGuards(AuthGuard)
-  @ApiOperation({ summary: 'summary', description: 'description' })
   @ApiResponse({ status: 200, type: Vilnyy })
   @ApiBody({ type: CreateVilnyyDto })
   create(@Body() vilnyyDto: CreateVilnyyDto): Promise<Vilnyy> {
