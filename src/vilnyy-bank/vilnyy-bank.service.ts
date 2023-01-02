@@ -28,7 +28,7 @@ export class VilnyyBankService {
   getLatestBanks(vilnyyIds?: number[]): Promise<VilnyyBank[]> {
     const query = this.vilnyyBankRepo
       .createQueryBuilder('bank')
-      .select(['bank.vilnyyId', 'bank.amount', 'bank.goal'])
+      .select(['bank.vilnyyId', 'bank.amount', 'bank.goal', 'bank.createdAt'])
       .distinctOn(['bank.vilnyyId'])
       .orderBy({ 'bank.vilnyyId': 'ASC', 'bank.createdAt': 'DESC' });
 
