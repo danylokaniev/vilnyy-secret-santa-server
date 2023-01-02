@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -11,6 +11,8 @@ import { MonoBankResponse, SettledMonoBankPromises } from './vilnyy-bank.interfa
 
 @Injectable()
 export class VilnyyBankService {
+  public isUpdatingBanks = true;
+
   constructor(
     @InjectRepository(VilnyyBank)
     private vilnyyBankRepo: Repository<VilnyyBank>,
@@ -51,31 +53,38 @@ export class VilnyyBankService {
     return this.vilnyyBankRepo.save(vilnyy);
   }
 
-  @Cron('*/2 * * * *')
+  switchUpdatingBanks(): boolean {
+    this.isUpdatingBanks = !this.isUpdatingBanks;
+    return this.isUpdatingBanks;
+  }
+
+  @Cron('0 */2 * * * *')
   async updateBanks() {
-    const vilnyys = await this.vilnyyRepo.find({
-      where: { bankId: Not(IsNull()) }
-    });
-
-    if (!vilnyys.length) return;
-
-    const vilnyyBanks = await this.getLatestBanks(vilnyys.map((vil) => vil.id));
-    const currentBanks = await this.getCurrentBanks(vilnyys.map((vil) => vil.bankId));
-
-    const updatedBanks: CreateVilnyyBankDto[] = currentBanks
-      .map((bank) => ({
-        vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
-        goal: bank?.jarGoal / 100,
-        amount: (bank?.jarAmount ?? 0) / 100
-      }))
-      // filter only updated banks
-      .filter((newBank) => {
-        const prevVilnyyBank = vilnyyBanks.find((bank) => bank.vilnyyId === newBank.vilnyyId);
-        return prevVilnyyBank?.amount !== newBank?.amount || prevVilnyyBank?.goal !== newBank?.goal;
+    if (this.isUpdatingBanks) {
+      const vilnyys = await this.vilnyyRepo.find({
+        where: { bankId: Not(IsNull()) }
       });
 
-    if (updatedBanks.length) {
-      await this.vilnyyBankRepo.createQueryBuilder().insert().into(VilnyyBank).values(updatedBanks).execute();
+      if (!vilnyys.length) return;
+
+      const vilnyyBanks = await this.getLatestBanks(vilnyys.map((vil) => vil.id));
+      const currentBanks = await this.getCurrentBanks(vilnyys.map((vil) => vil.bankId));
+
+      const updatedBanks: CreateVilnyyBankDto[] = currentBanks
+        .map((bank) => ({
+          vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
+          goal: (bank?.jarGoal ?? 0) / 100,
+          amount: (bank?.jarAmount ?? 0) / 100
+        }))
+        // filter only updated banks
+        .filter((newBank) => {
+          const prevVilnyyBank = vilnyyBanks.find((bank) => bank.vilnyyId === newBank.vilnyyId);
+          return prevVilnyyBank?.amount !== newBank?.amount || prevVilnyyBank?.goal !== newBank?.goal;
+        });
+
+      if (updatedBanks.length) {
+        await this.vilnyyBankRepo.createQueryBuilder().insert().into(VilnyyBank).values(updatedBanks).execute();
+      }
     }
   }
 
