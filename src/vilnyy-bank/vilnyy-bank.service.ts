@@ -73,8 +73,8 @@ export class VilnyyBankService {
       const updatedBanks: CreateVilnyyBankDto[] = currentBanks
         .map((bank) => ({
           vilnyyId: vilnyys.find((vil) => vil.bankId === bank.bankId).id,
-          goal: (bank?.jarGoal ?? 0) / 100,
-          amount: (bank?.jarAmount ?? 0) / 100
+          goal: Math.floor((bank?.jarGoal ?? 0) / 100),
+          amount: Math.floor((bank?.jarAmount ?? 0) / 100)
         }))
         // filter only updated banks
         .filter((newBank) => {
