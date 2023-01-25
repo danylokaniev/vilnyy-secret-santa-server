@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { Cron } from '@nestjs/schedule';
+import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Vilnyy } from 'src/vilnyy/vilnyy.entity';
 import { IsNull, Not, Repository } from 'typeorm';
@@ -58,7 +58,7 @@ export class VilnyyBankService {
     return this.isUpdatingBanks;
   }
 
-  @Cron('0 */2 * * * *')
+  @Cron(CronExpression.EVERY_MINUTE)
   async updateBanks() {
     if (this.isUpdatingBanks) {
       const vilnyys = await this.vilnyyRepo.find({

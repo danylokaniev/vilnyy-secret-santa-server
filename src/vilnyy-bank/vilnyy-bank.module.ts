@@ -13,7 +13,7 @@ import { VilnyyBankService } from './vilnyy-bank.service';
     HttpModule,
     ScheduleModule.forRoot(),
     CacheModule.register({
-      ttl: 120 * 1000
+      ttl: 60 * 1000
     })
   ],
   providers: [VilnyyBankService],
