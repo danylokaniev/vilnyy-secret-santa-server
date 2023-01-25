@@ -30,7 +30,7 @@ export class VilnyyBankService {
       .createQueryBuilder('bank')
       .select(['bank.vilnyyId', 'bank.amount', 'bank.goal', 'bank.createdAt'])
       .distinctOn(['bank.vilnyyId'])
-      .orderBy({ 'bank.vilnyyId': 'ASC', 'bank.createdAt': 'DESC' });
+      .orderBy({ 'bank.vilnyyId': 'ASC', 'bank.amount': 'DESC' });
 
     if (vilnyyIds?.length) {
       query.andWhere('bank.vilnyyId IN (:...vilnyyIds)', {
